@@ -10,20 +10,21 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-
 @Entity
-@Table(name = "tasks")
-public class Task {
+@Table(name = "comments")
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "task_id")
+    private Task task;
+    @Column(name = "author_id")
+    private Long authorId;
     @Column(nullable = false)
-    private String title;
-    @Column(name = "due_date")
-    private LocalDateTime dueDate;
-    @Column(name = "created_by")
-    private Long createdBy;
+    private String content;
 
     @CreationTimestamp
     @Column(name = "created_at")
