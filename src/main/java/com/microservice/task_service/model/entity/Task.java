@@ -18,12 +18,19 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String title;
+
     @Column(name = "due_date")
     private LocalDateTime dueDate;
+
     @Column(name = "created_by")
     private Long createdBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private TaskStatus taskStatus;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -32,4 +39,7 @@ public class Task {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column
+    private Boolean updated;
 }

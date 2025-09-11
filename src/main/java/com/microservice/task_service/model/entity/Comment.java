@@ -21,8 +21,10 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "task_id")
     private Task task;
+
     @Column(name = "author_id")
     private Long authorId;
+
     @Column(nullable = false)
     private String content;
 
@@ -33,4 +35,7 @@ public class Comment {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column
+    private Boolean updated;
 }
