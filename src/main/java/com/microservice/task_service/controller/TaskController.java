@@ -5,6 +5,7 @@ import com.microservice.task_service.model.dto.TaskSaveRequestDto;
 import com.microservice.task_service.model.dto.TaskUpdateRequestDto;
 import com.microservice.task_service.model.entity.Task;
 import com.microservice.task_service.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskDto> create(@RequestBody TaskSaveRequestDto taskSaveRequestDto){
+    public ResponseEntity<TaskDto> create(@Valid @RequestBody TaskSaveRequestDto taskSaveRequestDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(TASK_MAPPER.map(taskService.save(TASK_MAPPER.toEntity(taskSaveRequestDto))));
     }
 
@@ -39,7 +40,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskDto> update(@RequestBody TaskUpdateRequestDto task, @PathVariable Long id){
+    public ResponseEntity<TaskDto> update(@Valid @RequestBody TaskUpdateRequestDto task, @PathVariable Long id){
         return ResponseEntity.ok(TASK_MAPPER.map(taskService.update(id, TASK_MAPPER.map(task))));
     }
 
