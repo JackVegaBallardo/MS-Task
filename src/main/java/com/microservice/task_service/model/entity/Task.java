@@ -32,6 +32,10 @@ public class Task {
     @Column(name = "status")
     private TaskStatus taskStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "priority")
+    private TaskPriority taskPriority;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

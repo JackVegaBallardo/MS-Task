@@ -1,9 +1,11 @@
 package com.microservice.task_service.service;
 
+import com.microservice.task_service.exception.TaskNotFoundException;
 import com.microservice.task_service.model.entity.Task;
 import com.microservice.task_service.model.entity.TaskStatus;
 import com.microservice.task_service.repository.TaskRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
+    @Transactional
     public Task save(Task task) {
         task.setTaskStatus(TaskStatus.PENDING);
         return taskRepository.save(task);
@@ -24,10 +27,12 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public Task findById(Long id) {
-        return taskRepository.findById(id).orElseThrow();
+
+        return taskRepository.findById(id).orElseThrow(TaskNotFoundException::new);
     }
 
     @Override
+    @Transactional
     public Task update(Long id, Task task) {
         return taskRepository.findById(id).map(t -> {
             t.setUpdated(true);
@@ -35,12 +40,17 @@ public class TaskServiceImpl implements TaskService{
             t.setDueDate(task.getDueDate());
             t.setCreatedBy(task.getCreatedBy());
             t.setTaskStatus(task.getTaskStatus());
+            t.setTaskPriority(task.getTaskPriority());
             return taskRepository.save(t);
-        }).orElseThrow();
+        }).orElseThrow(TaskNotFoundException::new);
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
+        if(!taskRepository.existsById(id)){
+            throw new TaskNotFoundException();
+        }
         taskRepository.deleteById(id);
     }
 
