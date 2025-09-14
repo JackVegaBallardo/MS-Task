@@ -11,4 +11,5 @@ public interface TaskService {
     Task update(Long id, Task task);
     void delete(Long id);
     List<Task> findAll();
+    List<Task> findByCreatedBy(Long createdBy);
 }

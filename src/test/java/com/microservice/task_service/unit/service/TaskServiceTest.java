@@ -151,4 +151,14 @@ public class TaskServiceTest {
         assertThrows(TaskNotFoundException.class, () -> taskService.update(99L, taskToUpdate));
         verify(taskRepository).findById(99L);
     }
+
+    @Test
+    void findByCreatedByTest(){
+        Long createdBy = 1L;
+        when(taskRepository.findByCreatedBy(createdBy)).thenReturn(List.of(task));
+
+        List<Task> list = taskService.findByCreatedBy(createdBy);
+
+        assertEquals(1, list.size());
+    }
 }

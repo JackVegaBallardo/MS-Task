@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -19,6 +20,16 @@ public class TaskServiceTest {
 
     @Autowired
     private TaskService taskService;
+
+
+    @Test
+    void findAllTest(){
+
+        List<Task> tasks = taskService.findAll();
+
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+    }
 
     @Test
     void findByIdTest(){
@@ -34,6 +45,16 @@ public class TaskServiceTest {
     void findByIdNotFoundTest(){
         Long id = 99L;
         assertThrows(TaskNotFoundException.class, () -> taskService.findById(id));
+    }
+
+    @Test
+    void findByCreatedByTest(){
+        Long id = 1L;
+
+        List<Task> tasks = taskService.findByCreatedBy(id);
+
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
     }
 
     @Test

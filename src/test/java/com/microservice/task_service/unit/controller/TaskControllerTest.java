@@ -20,6 +20,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -144,6 +145,22 @@ public class TaskControllerTest {
         mockMvc.perform(get("/api/tasks/{id}", id))
                 .andExpect(status().isNotFound());
         verify(taskService, times(1)).findById(id);
+    }
+
+    @Test
+    void findByCreatedByTest() throws Exception{
+        Long id = 1L;
+        when(taskService.findByCreatedBy(id)).thenReturn(List.of(sampleTask));
+
+        mockMvc.perform(get("/api/tasks/user/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].title").value("Test Task"))
+                .andExpect(jsonPath("$[0].taskStatus").value("PENDING"))
+                .andExpect(jsonPath("$[0].taskPriority").value("HIGH"));
+
+        verify(taskService, times(1)).findByCreatedBy(id);
     }
 
     private Task createSampleTask() {

@@ -49,4 +49,9 @@ public class TaskController {
         taskService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/user/{createdBy}")
+    public ResponseEntity<List<TaskDto>> findByCreatedBy(@PathVariable Long createdBy){
+        return ResponseEntity.ok(TASK_MAPPER.map(taskService.findByCreatedBy(createdBy)));
+    }
 }

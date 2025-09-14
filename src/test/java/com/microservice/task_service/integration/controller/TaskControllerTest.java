@@ -124,6 +124,36 @@ public class TaskControllerTest {
     }
 
     @Test
+    void findCreatedByTest() throws Exception{
+        Long id = 1L;
+
+        mockMvc.perform(get("/api/tasks/user/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].title").value("Configurar cobertura de pruebas"))
+                .andExpect(jsonPath("$[0].taskStatus").value("PENDING"))
+                .andExpect(jsonPath("$[0].taskPriority").value("HIGH"));
+    }
+
+    @Test
+    void findAllTest() throws Exception{
+
+        mockMvc.perform(get("/api/tasks"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].title").value("Configurar cobertura de pruebas"))
+                .andExpect(jsonPath("$[0].taskStatus").value("PENDING"))
+                .andExpect(jsonPath("$[0].taskPriority").value("HIGH"))
+                .andExpect(jsonPath("$[1].id").value(2L))
+                .andExpect(jsonPath("$[1].title").value("Escribir pruebas unitarias del servicio"))
+                .andExpect(jsonPath("$[1].taskStatus").value("IN_PROGRESS"))
+                .andExpect(jsonPath("$[1].taskPriority").value("MEDIUM"));
+
+    }
+
+    @Test
     void findByIdTaskNotFoundTest() throws Exception{
         Long id = 99L;
         mockMvc.perform(get("/api/tasks/{id}", id))

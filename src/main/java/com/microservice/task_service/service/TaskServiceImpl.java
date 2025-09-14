@@ -21,7 +21,6 @@ public class TaskServiceImpl implements TaskService{
     @Override
     @Transactional
     public Task save(Task task) {
-        task.setTaskStatus(TaskStatus.PENDING);
         return taskRepository.save(task);
     }
 
@@ -57,5 +56,10 @@ public class TaskServiceImpl implements TaskService{
     @Override
     public List<Task> findAll() {
         return taskRepository.findAll();
+    }
+
+    @Override
+    public List<Task> findByCreatedBy(Long createdBy) {
+        return taskRepository.findByCreatedBy(createdBy);
     }
 }
