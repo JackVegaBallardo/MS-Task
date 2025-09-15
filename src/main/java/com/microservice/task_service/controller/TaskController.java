@@ -1,14 +1,20 @@
 package com.microservice.task_service.controller;
 
+import com.microservice.task_service.client.UserDirectoryService;
 import com.microservice.task_service.model.dto.TaskDto;
 import com.microservice.task_service.model.dto.TaskSaveRequestDto;
 import com.microservice.task_service.model.dto.TaskUpdateRequestDto;
 import com.microservice.task_service.model.entity.Task;
 import com.microservice.task_service.service.TaskService;
+
 import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
 
@@ -19,13 +25,21 @@ import static com.microservice.task_service.mapper.TaskMapper.TASK_MAPPER;
 public class TaskController {
 
     private final TaskService taskService;
+    
+    private final UserDirectoryService userDirectoryService;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, UserDirectoryService userDirectoryService) {
         this.taskService = taskService;
+        this.userDirectoryService=userDirectoryService;
     }
 
     @PostMapping
-    public ResponseEntity<TaskDto> create(@Valid @RequestBody TaskSaveRequestDto taskSaveRequestDto){
+    public ResponseEntity<TaskDto> create(@Valid @RequestBody TaskSaveRequestDto taskSaveRequestDto,@AuthenticationPrincipal Jwt jwt){
+         String sub = jwt.getSubject();             
+        String issuer = jwt.getIssuer().toString(); 
+        Long userId=userDirectoryService.resolveLocalUserIdOrThrow(issuer,sub);
+        System.out.println("formado esPostCreate "+sub+issuer + "id:" +userId);
+        taskSaveRequestDto.setCreatedBy(userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(TASK_MAPPER.map(taskService.save(TASK_MAPPER.toEntity(taskSaveRequestDto))));
     }
 
@@ -34,9 +48,13 @@ public class TaskController {
         return ResponseEntity.ok(TASK_MAPPER.map(taskService.findAll()));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TaskDto> findById(@PathVariable Long id){
-        return ResponseEntity.ok(TASK_MAPPER.map(taskService.findById(id)));
+    @GetMapping("/id")
+    public ResponseEntity<TaskDto> findById (@AuthenticationPrincipal Jwt jwt){
+        String sub = jwt.getSubject();             
+        String issuer = jwt.getIssuer().toString(); 
+        Long userId=userDirectoryService.resolveLocalUserIdOrThrow(issuer,sub);
+        System.out.println("formado es "+sub+issuer + "id:" +userId);
+        return ResponseEntity.ok(TASK_MAPPER.map(taskService.findById(userId)));
     }
 
     @PutMapping("/{id}")
@@ -50,8 +68,12 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/user/{createdBy}")
-    public ResponseEntity<List<TaskDto>> findByCreatedBy(@PathVariable Long createdBy){
-        return ResponseEntity.ok(TASK_MAPPER.map(taskService.findByCreatedBy(createdBy)));
+    @GetMapping("/user")
+    public ResponseEntity<List<TaskDto>> findByCreatedBy(@AuthenticationPrincipal Jwt jwt){
+        String sub = jwt.getSubject();             
+        String issuer = jwt.getIssuer().toString(); 
+        Long userId=userDirectoryService.resolveLocalUserIdOrThrow(issuer,sub);
+        System.out.println("formado es "+sub+issuer + "id:" +userId);
+        return ResponseEntity.ok(TASK_MAPPER.map(taskService.findByCreatedBy(userId)));
     }
 }

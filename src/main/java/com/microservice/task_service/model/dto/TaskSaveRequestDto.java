@@ -1,5 +1,6 @@
 package com.microservice.task_service.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.microservice.task_service.model.entity.TaskPriority;
 import com.microservice.task_service.model.entity.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
@@ -17,7 +18,6 @@ public class TaskSaveRequestDto {
     @NotBlank(message = "El títutlo no puede estar vacío")
     private String title;
 
-    @NotNull(message = "El id del creador no puede estar nulo")
     @Positive(message = "El id del creador debe ser positivo")
     private Long createdBy;
 
@@ -28,5 +28,6 @@ public class TaskSaveRequestDto {
     private TaskPriority taskPriority;
 
     @NotNull(message = "La fecha de vencimiento es obligatoria")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm[:ss]")
     private LocalDateTime dueDate;
 }
