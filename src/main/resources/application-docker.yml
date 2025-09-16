@@ -1,0 +1,26 @@
+server:
+  port: 8061
+
+spring:
+  application:
+    name: task-service
+
+  datasource:
+    url: jdbc:postgresql://postgres-task:5432/task_db
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak-sv:8080/realms/master
