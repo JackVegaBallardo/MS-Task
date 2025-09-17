@@ -24,3 +24,5 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://keycloak-sv:8080/realms/master
+          
+USER_MS_BASE_URL: http://user-ms:8071

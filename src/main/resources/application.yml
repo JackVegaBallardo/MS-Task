@@ -25,3 +25,4 @@ spring:
       jwt:
         issuer-uri: http://localhost:8095/realms/master
 
+USER_MS_BASE_URL: http://localhost:8071
