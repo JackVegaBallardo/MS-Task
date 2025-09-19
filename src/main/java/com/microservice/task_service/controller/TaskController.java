@@ -4,12 +4,10 @@ import com.microservice.task_service.client.UserDirectoryService;
 import com.microservice.task_service.model.dto.TaskDto;
 import com.microservice.task_service.model.dto.TaskSaveRequestDto;
 import com.microservice.task_service.model.dto.TaskUpdateRequestDto;
-import com.microservice.task_service.model.entity.Task;
 import com.microservice.task_service.service.TaskService;
 
 import jakarta.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,5 +73,12 @@ public class TaskController {
         Long userId=userDirectoryService.resolveLocalUserIdOrThrow(issuer,sub);
         System.out.println("formado es "+sub+issuer + "id:" +userId);
         return ResponseEntity.ok(TASK_MAPPER.map(taskService.findByCreatedBy(userId)));
+    }
+     @GetMapping("/joinable")
+    public ResponseEntity<List<TaskDto>> joinablePublicTasks(@AuthenticationPrincipal Jwt jwt) {
+        String sub = jwt.getSubject();             
+        String issuer = jwt.getIssuer().toString();  
+        List<TaskDto> taskDtoLists =TASK_MAPPER.map(taskService.listJoinablePublicTasksForMe(issuer, sub));
+        return ResponseEntity.ok(taskDtoLists);
     }
 }

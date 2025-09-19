@@ -12,4 +12,5 @@ public interface TaskService {
     void delete(Long id);
     List<Task> findAll();
     List<Task> findByCreatedBy(Long createdBy);
+    List<Task> listJoinablePublicTasksForMe(String kcIss, String kcSub);
 }

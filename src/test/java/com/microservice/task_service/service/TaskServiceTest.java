@@ -1,9 +1,12 @@
-package com.microservice.task_service.unit.service;
+package com.microservice.task_service.service;
 
+import com.microservice.task_service.client.UserServiceClient;
 import com.microservice.task_service.exception.TaskNotFoundException;
+import com.microservice.task_service.model.dto.MeTestResponse;
 import com.microservice.task_service.model.entity.Task;
 import com.microservice.task_service.model.entity.TaskPriority;
 import com.microservice.task_service.model.entity.TaskStatus;
+import com.microservice.task_service.model.entity.TaskVisibility;
 import com.microservice.task_service.repository.TaskRepository;
 import com.microservice.task_service.service.TaskServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +27,9 @@ public class TaskServiceTest {
 
     @Mock
     private TaskRepository taskRepository;
+
+    @Mock
+    private UserServiceClient userServiceClient;
 
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -160,5 +166,73 @@ public class TaskServiceTest {
         List<Task> list = taskService.findByCreatedBy(createdBy);
 
         assertEquals(1, list.size());
+    }
+
+    @Test
+    void listJoinableTasksNullFriendsTest() {
+        String kcIss = "https://kc/realms/master";
+        String kcSub = "sub-1";
+
+        MeTestResponse me = mock(MeTestResponse.class);
+        when(me.localUserId()).thenReturn(11L);
+        when(userServiceClient.test(kcIss, kcSub)).thenReturn(me);
+
+        when(userServiceClient.getMyFriendIds()).thenReturn(null);
+
+        List<Task> result = taskService.listJoinablePublicTasksForMe(kcIss, kcSub);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(userServiceClient).test(kcIss, kcSub);
+        verify(userServiceClient).getMyFriendIds();
+        verifyNoInteractions(taskRepository);
+    }
+
+    @Test
+    void listJoinableTasksEmptyFriendsTest() {
+        String kcIss = "https://kc/realms/master";
+        String kcSub = "sub-1";
+
+        MeTestResponse me = mock(MeTestResponse.class);
+        when(me.localUserId()).thenReturn(11L);
+        when(userServiceClient.test(kcIss, kcSub)).thenReturn(me);
+
+        when(userServiceClient.getMyFriendIds()).thenReturn(List.of());
+
+        List<Task> result = taskService.listJoinablePublicTasksForMe(kcIss, kcSub);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(userServiceClient).test(kcIss, kcSub);
+        verify(userServiceClient).getMyFriendIds();
+        verifyNoInteractions(taskRepository);
+    }
+
+    @Test
+    void listJoinableTasksWithFriendsTest() {
+        String kcIss = "https://kc/realms/master";
+        String kcSub = "sub-3";
+
+        MeTestResponse me = mock(MeTestResponse.class);
+        when(me.localUserId()).thenReturn(11L);
+        when(userServiceClient.test(kcIss, kcSub)).thenReturn(me);
+
+        List<Long> friendIds = List.of(2L, 3L, 5L);
+        when(userServiceClient.getMyFriendIds()).thenReturn(friendIds);
+
+        when(taskRepository.findJoinablePublicTasksFromFriends(11L, friendIds, TaskVisibility.PUBLIC))
+                .thenReturn(List.of(task));
+
+        List<Task> result = taskService.listJoinablePublicTasksForMe(kcIss, kcSub);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(task.getId(), result.get(0).getId());
+
+        verify(userServiceClient).test(kcIss, kcSub);
+        verify(userServiceClient).getMyFriendIds();
+        verify(taskRepository).findJoinablePublicTasksFromFriends(11L, friendIds, TaskVisibility.PUBLIC);
     }
 }

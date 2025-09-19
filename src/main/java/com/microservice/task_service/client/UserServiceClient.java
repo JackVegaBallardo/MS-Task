@@ -1,6 +1,9 @@
 package com.microservice.task_service.client;
 
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -21,4 +24,7 @@ public interface UserServiceClient {
   @GetMapping("/me/test")
   MeTestResponse test(@RequestParam("kcIss") String kcIss,
                       @RequestParam("kcSub") String kcSub);
+
+  @GetMapping("me/friends/ids")
+   List<Long> getMyFriendIds();
 }

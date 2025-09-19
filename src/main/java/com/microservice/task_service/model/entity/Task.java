@@ -44,6 +44,10 @@ public class Task {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visibility", nullable = true, length = 10)
+    private TaskVisibility visibility = TaskVisibility.PUBLIC;
+
     @Column
     private Boolean updated;
 }
